@@ -12,7 +12,7 @@ const useWebSocket = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const socketRef = useRef<any>();
   useEffect(() => {
-    const socket = io("ws://localhost:5000", {
+    const socket = io(JSON.stringify(process.env.url), {
       transports: ["websocket"],
     });
     socket.on("connect", () => {
