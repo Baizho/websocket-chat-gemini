@@ -18,6 +18,11 @@ const useWebSocket = () => {
     socket.on("connect", () => {
       console.log("connected");
     });  
+    socket.emit("sendHistory", "send it bruh");
+    socket.on("loadHistory", (res) => {
+      console.log(res);
+      setMessages(res);
+    })
     socketRef.current = socket;
   }, [])
 
