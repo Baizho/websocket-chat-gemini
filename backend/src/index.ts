@@ -39,6 +39,7 @@ io.on("connect", (socket) => {
   
   socket.on("sendHistory", async () => {
     const res = await getMessages();
+    console.log(res);
     socket.emit("loadHistory", res);
   })
 
@@ -64,8 +65,8 @@ io.on("connect", (socket) => {
   })
 });
 
-app.get("/", () => {
-  console.log("main page");
+app.get('/', (req, res) => {
+  res.send("GET Request Called")
 })
 
 server.listen(PORT, () => {

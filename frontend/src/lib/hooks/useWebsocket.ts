@@ -1,4 +1,3 @@
-
 import { useEffect, useRef, useState } from 'react';
 import { io } from 'socket.io-client';
 
@@ -12,7 +11,7 @@ const useWebSocket = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const socketRef = useRef<any>();
   useEffect(() => {
-    const socket = io(JSON.stringify(process.env.url), {
+    const socket = io("wss://websocket-chat-gemini-backend.vercel.app/", {
       transports: ["websocket"],
     });
     socket.on("connect", () => {
