@@ -1,62 +1,106 @@
-'use client';
+"use client";
+import useWebSocket from "@/lib/hooks/useWebsocket";
+import { JSX, SVGProps, useEffect, useState } from "react";
 
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import useWebSocket from '@/lib/hooks/useWebsocket';
-import { useEffect, useState } from 'react';
-import Roadmap from '@/components/roadmap';
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@/components/ui/button";
+import { io } from "socket.io-client";
+
 export default function Home() {
-  const { messages, sendMessage } = useWebSocket('ws://localhost:5000');
-  const [prompt, setPrompt] = useState('');
+  const { messages, sendMessage } = useWebSocket();
+  const [prompt, setPrompt] = useState("");
 
   const handleSend = () => {
-    if (prompt.trim() !== '') {
+    if (prompt.trim() !== "") {
       sendMessage(prompt);
-      setPrompt('');
+      setPrompt("");
     }
   };
 
   useEffect(() => {
-    console.log(messages);
+    // console.log("changed", messages);
   }, [messages]);
 
   return (
-    <div className="flex flex-col w-full min-h-screen">
-      <header className="bg-primary text-primary-foreground py-6 px-4 md:px-6">
-        <h1 className="text-3xl font-bold">Roadmap Generator via WebSockets</h1>
+    <div className="flex flex-col h-[90vh] max-w-2xl mx-auto bg-background rounded-2xl shadow-lg overflow-hidden font-sans">
+      <header className="bg-primary text-primary-foreground px-6 py-4 flex items-center gap-4">
+        <Avatar className="w-8 h-8 border-2 border-primary-foreground">
+          {/* <AvatarImage src="/placeholder-user.jpg" /> */}
+          <AvatarFallback>CB</AvatarFallback>
+        </Avatar>
+        <h2 className="text-lg font-medium">Chatbot</h2>
       </header>
-      <main className="flex-1 py-12 px-4 md:px-6">
-        <div className="mb-8">
-          <h2 className="text-xl font-semibold mb-4">Enter Prompt</h2>
-          <div className="flex space-x-2">
-            <Input
-              type="text"
-              value={prompt}
-              onChange={(e) => setPrompt(e.target.value)}
-              placeholder="Enter your prompt"
-              className="flex-1 px-4 py-2 border rounded-lg"
-            />
-            <Button
-              onClick={handleSend}
-              className="px-4 py-2 bg-primary text-primary-foreground rounded-lg"
-            >
-              Send
-            </Button>
-          </div>
-        </div>
-        <div>
-          <h2 className="text-xl font-semibold mb-4">Messages</h2>
-          <div className="space-y-2">
-            {messages.map((message, index) => (
-              <Roadmap
-                key={index}
-                title={message.title}
-                details={message.details}
-              />
-            ))}
-          </div>
-        </div>
-      </main>
+      <div className="flex-1 overflow-auto p-6 space-y-4">
+        {messages.map((message, index) => {
+          if (message.role === "chat") {
+            return (
+              <div key={index} className="flex items-start gap-4">
+                <Avatar className="w-8 h-8 border-2 border-muted">
+                  {/* <AvatarImage src="/placeholder-user.jpg" /> */}
+                  <AvatarFallback>JD</AvatarFallback>
+                </Avatar>
+                <div className="bg-muted rounded-2xl p-4 max-w-[70%]">
+                  <p className="text-sm">{message.content}</p>
+                </div>
+              </div>
+            );
+          } else {
+            return (
+              <div key={index} className="flex items-start gap-4 justify-end">
+                <div className="bg-primary rounded-2xl p-4 max-w-[70%] text-primary-foreground">
+                  <p className="text-sm">{message.content}</p>
+                </div>
+                <Avatar className="w-8 h-8 border-2 border-primary">
+                  {/* <AvatarImage src="/placeholder-user.jpg" /> */}
+                  <AvatarFallback>CB</AvatarFallback>
+                </Avatar>
+              </div>
+            );
+          }
+        })}
+      </div>
+      <div className="bg-muted px-6 py-4 flex items-center gap-4">
+        <Textarea
+          placeholder="Type your message..."
+          value={prompt}
+          onChange={(e) => {
+            // console.log("writing");
+            setPrompt(e.currentTarget.value);
+          }}
+          className="flex-1 resize-none rounded-2xl border-none focus:ring-0 focus:outline-none"
+          rows={1}
+        />
+        <Button
+          variant="ghost"
+          size="icon"
+          className="rounded-full"
+          onClick={handleSend}
+        >
+          <SendIcon className="w-5 h-5" />
+          <span className="sr-only">Send</span>
+        </Button>
+      </div>
     </div>
+  );
+}
+
+function SendIcon(props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>) {
+  return (
+    <svg
+      {...props}
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="m22 2-7 20-4-9-9-4Z" />
+      <path d="M22 2 11 13" />
+    </svg>
   );
 }
