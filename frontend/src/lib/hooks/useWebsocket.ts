@@ -11,7 +11,7 @@ const useWebSocket = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const socketRef = useRef<any>();
   useEffect(() => {
-    const socket = io("ws://websocket-chat-gemini-backend.vercel.app/", {
+    const socket = io("wss://websocket-chat-gemini-backend.vercel.app/", {
       transports: ["websocket"],
     });
     socket.on("connect", () => {
