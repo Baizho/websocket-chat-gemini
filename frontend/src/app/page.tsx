@@ -1,6 +1,6 @@
 "use client";
 import useWebSocket from "@/lib/hooks/useWebsocket";
-import { JSX, SVGProps, useEffect, useState } from "react";
+import { JSX, SVGProps, useEffect, useRef, useState } from "react";
 
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Textarea } from "@/components/ui/textarea";
@@ -22,6 +22,21 @@ export default function Home() {
     // console.log("changed", messages);
   }, [messages]);
 
+
+  const messageEl = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (messageEl !== null && messageEl.current !== null) {
+      messageEl.current.addEventListener(
+        "DOMNodeInserted",
+        (event: { currentTarget: any }) => {
+          const { currentTarget: target } = event;
+          target.scroll({ top: target.scrollHeight, behavior: "smooth" });
+        }
+      );
+    }
+  }, []);
+
   return (
     <div className="flex flex-col h-[90vh] max-w-2xl mx-auto bg-background rounded-2xl shadow-lg overflow-hidden font-sans">
       <header className="bg-primary text-primary-foreground px-6 py-4 flex items-center gap-4">
@@ -31,7 +46,7 @@ export default function Home() {
         </Avatar>
         <h2 className="text-lg font-medium">Chatbot</h2>
       </header>
-      <div className="flex-1 overflow-auto p-6 space-y-4">
+      <div className="flex-1 overflow-auto p-6 space-y-4" ref={messageEl}>
         {messages.map((message, index) => {
           if (message.role === "chat") {
             return (

@@ -11,7 +11,7 @@ const useWebSocket = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const socketRef = useRef<any>();
   useEffect(() => {
-    const socket = io("wss://websocket-chat-gemini.onrender.com/", {
+    const socket = io("wss://websocket-chat-gemini-production.up.railway.app", {
       transports: ["websocket"],
     });
     socket.on("connect", () => {
